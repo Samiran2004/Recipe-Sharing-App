@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const cloudinary = require('../middleware/cloudinaryModdleware');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 //@route:- POST  /api/user/signup
 //@access:- Public
@@ -63,13 +64,44 @@ const signup = async (req, res) => {
 //@route:- POST  /api/user/login
 //@access:- Public
 const login = async (req, res) => {
-    res.status(200).send({ message: "Login user" });
+    const { email, password } = req.body;
+    if (!email || !password) {
+        res.status(404).send({
+            status: "Failed",
+            message: "All feilds are required"
+        });
+    } else {
+        const user = await User.findOne({email:email});
+        const checkPassword = await bcrypt.compare(password,user.password);
+        if(checkPassword == true){
+            const payload = {
+                fullname: user.fullname,
+                email: user.email,
+                phone: user.phone,
+                _id: user._id
+            }
+            const token = await jwt.sign(payload, process.env.JWT_SECRET_KEY);
+            res.status(200).send({
+                status:"Success",
+                message:"Login",
+                token
+            });
+        }else{
+            res.status(400).send({
+                status:"Failed",
+                message:"Invalid password."
+            });
+        }
+    }
 }
 
 //@route:- GET  /api/user/get-user-dets
 //@access:- Private
 const getUserDets = async (req, res) => {
-    res.status(200).send({ message: "User data" });
+    res.status(200).send({
+        status:"Success",
+        data: req.user
+    });
 }
 
 module.exports = {
