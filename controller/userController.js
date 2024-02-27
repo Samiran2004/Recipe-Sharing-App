@@ -71,25 +71,26 @@ const login = async (req, res) => {
             message: "All feilds are required"
         });
     } else {
-        const user = await User.findOne({email:email});
-        const checkPassword = await bcrypt.compare(password,user.password);
-        if(checkPassword == true){
+        const user = await User.findOne({ email: email });
+        const checkPassword = await bcrypt.compare(password, user.password);
+        if (checkPassword == true) {
             const payload = {
                 fullname: user.fullname,
                 email: user.email,
                 phone: user.phone,
-                _id: user._id
+                _id: user._id,
+                profilepicture: user.profilepicture
             }
             const token = await jwt.sign(payload, process.env.JWT_SECRET_KEY);
             res.status(200).send({
-                status:"Success",
-                message:"Login",
+                status: "Success",
+                message: "Login",
                 token
             });
-        }else{
+        } else {
             res.status(400).send({
-                status:"Failed",
-                message:"Invalid password."
+                status: "Failed",
+                message: "Invalid password."
             });
         }
     }
@@ -99,13 +100,38 @@ const login = async (req, res) => {
 //@access:- Private
 const getUserDets = async (req, res) => {
     res.status(200).send({
-        status:"Success",
+        status: "Success",
         data: req.user
     });
+}
+
+//@route:- PUT  /api/user/update
+//@access:- Private
+const updateUserDets = async (req, res) => {
+    try {
+        const updatedDetials = await User.findByIdAndUpdate(req.user._id, req.body);
+        res.status(201).send({
+            status: "Success",
+            message: "User updated",
+            data: {
+                fullname: updatedDetials.fullname,
+                email: updatedDetials.email,
+                phone: updatedDetials.phone,
+                _id: updatedDetials._id
+            }
+        });
+    } catch (error) {
+        res.status(400).send({
+            status: "Failed",
+            message: "Update user detials failed.",
+            error
+        });
+    }
 }
 
 module.exports = {
     signup,
     login,
-    getUserDets
+    getUserDets,
+    updateUserDets
 }
