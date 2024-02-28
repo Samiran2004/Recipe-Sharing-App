@@ -5,7 +5,9 @@ const {
     signup,
     login,
     getUserDets,
-    updateUserDets
+    updateUserDets,
+    sendOtp,
+    changePassword
 } = require('../controller/userController');
 const router = express.Router();
 
@@ -24,5 +26,13 @@ router.get('/get-user-dets', validator, getUserDets);
 //@route:- PUT  /api/user/update
 //@access:- Private
 router.put('/update', validator, updateUserDets);
+
+//@route:- POST  /api/user/otp
+//@access:- Public
+router.post('/otp', sendOtp);
+
+//@route:- PUT  /api/user/change-password
+//@access:- Public
+router.put('/change-password',changePassword);
 
 module.exports = router;

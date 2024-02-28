@@ -2,7 +2,9 @@ const User = require('../models/userModel');
 const cloudinary = require('../middleware/cloudinaryModdleware');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const sendMail = require('../services/mailServices');
+const otpgenerator = require('otp-generator');
+const OTP = require('../models/otpModel');
 //@route:- POST  /api/user/signup
 //@access:- Public
 const signup = async (req, res) => {
@@ -129,9 +131,85 @@ const updateUserDets = async (req, res) => {
     }
 }
 
+//@route:- POST  /api/user/otp
+//@access:- Public
+const sendOtp = async (req, res) => {
+    const email = req.body.email;
+    if (!email) {
+        res.status(404).send({
+            status: "Failed",
+            message: "Email is required"
+        })
+    } else {
+        const otp = otpgenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false });
+        try {
+            await OTP.create({ email: email, otp: otp });
+            await sendMail(email, "Password reset OTP", `Your OTP: ${otp} is valid till 30s`);
+            res.status(200).send({
+                status: "Success",
+                message: "OTP send"
+            });
+        } catch (error) {
+            res.status(400).send({
+                status: "Failed",
+                message: "OTP sending error."
+            });
+        }
+    }
+}
+
+//@route:- PUT  /api/user/change-password
+//@access:- Public
+const changePassword = async (req, res) => {
+    const { email, otp, newpassword } = req.body;
+    if (!email || !otp || !newpassword) {
+        return res.status(400).send({
+            status: "Failed",
+            message: "All fields are required"
+        });
+    }
+    try {
+        const otpData = await OTP.findOne({ email: email });
+        if (!otpData || otpData.otp !== otp) {
+            return res.status(401).send({
+                status: "Failed",
+                message: "OTP verification failed."
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(newpassword, 10);
+        const updatedData = await User.findOneAndUpdate(
+            { email: email },
+            { password: hashedPassword },
+            { new: true }
+        );
+
+        if (!updatedData) {
+            return res.status(404).send({
+                status: "Failed",
+                message: "Provided email does not exist"
+            });
+        }
+
+        return res.status(200).send({
+            status: "Success",
+            message: "Password updated successfully"
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({
+            status: "Failed",
+            message: "Internal Server Error"
+        });
+    }
+};
+
+
 module.exports = {
     signup,
     login,
     getUserDets,
-    updateUserDets
+    updateUserDets,
+    sendOtp,
+    changePassword
 }
