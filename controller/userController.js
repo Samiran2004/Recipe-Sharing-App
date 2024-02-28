@@ -68,35 +68,52 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        res.status(404).send({
+        res.status(400).json({
             status: "Failed",
-            message: "All feilds are required"
+            message: "All fields are required"
         });
-    } else {
+        return;
+    }
+
+    try {
         const user = await User.findOne({ email: email });
+        if (!user) {
+            res.status(400).json({
+                status: "Failed",
+                message: "User with this email does not exist."
+            });
+            return;
+        }
+
         const checkPassword = await bcrypt.compare(password, user.password);
-        if (checkPassword == true) {
+        if (checkPassword) {
             const payload = {
                 fullname: user.fullname,
                 email: user.email,
                 phone: user.phone,
                 _id: user._id,
                 profilepicture: user.profilepicture
-            }
-            const token = await jwt.sign(payload, process.env.JWT_SECRET_KEY);
-            res.status(200).send({
+            };
+            const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
+            res.status(200).json({
                 status: "Success",
-                message: "Login",
+                message: "Login successful",
                 token
             });
         } else {
-            res.status(400).send({
+            res.status(400).json({
                 status: "Failed",
                 message: "Invalid password."
             });
         }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "Failed",
+            message: "Login failed"
+        });
     }
-}
+};
 
 //@route:- GET  /api/user/get-user-dets
 //@access:- Private
