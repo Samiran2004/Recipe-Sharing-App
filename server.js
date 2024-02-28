@@ -12,6 +12,7 @@ app.use(bodyParser.json())
 mongoose.connect(process.env.DATABASE_URI).then(console.log("Database connected")).catch((err) => console.log(`Database connection error ${err}`));
 
 app.use('/api/user', require('./router/userRouter'));
+app.use('/api/recipe',require('./router/recipeRouter'));
 
 app.listen(process.env.PORT, (err) => {
     if (err) {
