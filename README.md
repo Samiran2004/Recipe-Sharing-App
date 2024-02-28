@@ -68,5 +68,10 @@ Start the server
 ## links
 
 ```bash
-  Signup a new User:- https://recipe-sharing-app-fm3y.onrender.com/api/user/signup
+  Signup a new User:- POST https://recipe-sharing-app-fm3y.onrender.com/api/user/signup
+```
+
+```bash
+  login a User:- POST https://recipe-sharing-app-fm3y.onrender.com/api/user/login
+  body:- email, password
 ```
