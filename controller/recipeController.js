@@ -19,8 +19,6 @@ const createRecipe = async (req, res) => {
 
         const createdRecipe = await Recipe.create({ authorId, recipeimages, recipename, ingredients, description });
         
-        console.log('Recipe created:', createdRecipe);
-        
         res.status(201).send({
             status: "Success",
             message: "New recipe created",
