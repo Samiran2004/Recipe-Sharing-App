@@ -15,6 +15,10 @@ const recipeSchema = new mongoose.Schema({
     },
     description: {
         type: String
+    },
+    type: {
+        type: String,
+        lowercase: true
     }
 });
 
