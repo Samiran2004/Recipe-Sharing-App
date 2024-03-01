@@ -93,8 +93,8 @@ const updateRecipe = async (req, res) => {
             if (recipeData.authorId == req.user._id) {
                 recipeData.recipename = recipename;
                 recipeData.ingredients = ingredients,
-                recipeData.description = description,
-                recipeData.type = type;
+                    recipeData.description = description,
+                    recipeData.type = type;
                 const updatedRecipeData = await recipeData.save();
                 res.status(200).send({
                     status: "Success",
@@ -118,10 +118,37 @@ const updateRecipe = async (req, res) => {
     }
 }
 
+//@Route:- DELETE  /api/recipe/delete/:id
+//@Access:- Private
+const deleteRecipe = async (req, res) => {
+    const recipeId = req.params.id;
+    try {
+        const recipeData = await Recipe.findById(recipeId);
+        if (recipeData.authorId !== req.user._id) {
+            res.status(400).send({
+                status: "Failed",
+                message: "You are not an author of this recipe"
+            });
+        } else {
+            const deletedData = await Recipe.findByIdAndDelete(recipeId);
+            res.status(200).send({
+                status: "Success",
+                message: "Recipe deleted successfully.",
+                deletedData
+            });
+        }
+    } catch (error) {
+        res.status(404).send({
+            status: "Failed",
+            message: "Recipe can't be deleted."
+        });
+    }
+}
 
 module.exports = {
     createRecipe,
     getAllRecipe,
     getAllByType,
-    updateRecipe
+    updateRecipe,
+    deleteRecipe
 }

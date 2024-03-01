@@ -5,7 +5,8 @@ const {
     createRecipe,
     getAllRecipe,
     getAllByType,
-    updateRecipe
+    updateRecipe,
+    deleteRecipe
 } = require('../controller/recipeController');
 const router = express.Router();
 
@@ -25,4 +26,7 @@ router.get('/get-all-type', getAllByType);
 //@Access:- Private
 router.patch('/update/:id', validator, updateRecipe);
 
+//@Route:- DELETE  /api/recipe/delete/:id
+//@Access:- Private
+router.delete('/delete/:id', validator, deleteRecipe);
 module.exports = router;
