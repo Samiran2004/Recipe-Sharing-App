@@ -75,3 +75,56 @@ Start the server
   login a User:- POST https://recipe-sharing-app-fm3y.onrender.com/api/user/login
   body:- email, password
 ```
+
+```bash
+  Update user detials:- POST https://recipe-sharing-app-fm3y.onrender.com/api/user/update
+  body:- {
+    fullname: {},
+    phone: {},
+  }
+```
+
+```bash
+  Get user detials:- GET https://recipe-sharing-app-fm3y.onrender.com/api/user/get-user-dets
+  Bearer Token is required
+```
+
+```bash
+  Send OTP:- POST https://recipe-sharing-app-fm3y.onrender.com/api/user/otp
+  body:- {
+    "email": `Valid email`
+  }
+```
+
+```bash
+  Verify Otp & Change password:- PUT https://recipe-sharing-app-fm3y.onrender.com/api/user/change-password
+  body:- {
+    "email": `Valid email`,
+    "otp": "OTP",
+    "newpassword": "abcd"
+  }
+```
+
+```bash
+  Create new recipe:- POST https://recipe-sharing-app-fm3y.onrender.com/api/recipe/create
+  form-data:[recipeimages,recipename,ingredients,description,type]
+  Bearer Token is required
+```
+
+```bash
+  Get all recipes:- GET https://recipe-sharing-app-fm3y.onrender.com/api/recipe/get-all?page={enter page}&limit={enter a limit}
+```
+
+```bash
+  Get all recipes by type:- GET https://recipe-sharing-app-fm3y.onrender.com/api/recipe/get-all-type?page=1&limit=2&type=pizza
+```
+
+```bash
+  Update a recipe:- PATCH https://recipe-sharing-app-fm3y.onrender.com/api/recipe/update/{:recipeId}
+  Bearer token is required
+```
+
+```bash
+  Delete a recipe:- PATCH https://recipe-sharing-app-fm3y.onrender.com/api/recipe/delete/{:recipeId}
+  Bearer token is required
+```
