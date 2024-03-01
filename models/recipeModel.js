@@ -19,6 +19,9 @@ const recipeSchema = new mongoose.Schema({
     type: {
         type: String,
         lowercase: true
+    },
+    publicId: {
+        type:String
     }
 });
 

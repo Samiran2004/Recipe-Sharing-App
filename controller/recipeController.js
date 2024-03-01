@@ -1,5 +1,6 @@
 const Recipe = require('../models/recipeModel');
 const cloudinary = require('../middleware/cloudinaryModdleware');
+const deleteImage = require('../services/deleteCloudinaryImg');
 
 const createRecipe = async (req, res) => {
     const { recipename, ingredients, description, type } = req.body;
@@ -16,8 +17,8 @@ const createRecipe = async (req, res) => {
 
         const result = await cloudinary.uploader.upload(req.file.path);
         recipeimages = result.url;
-
-        const createdRecipe = await Recipe.create({ authorId, recipeimages, recipename, ingredients, description, type });
+        const public_id = public_id
+        const createdRecipe = await Recipe.create({ authorId, recipeimages, recipename, ingredients, description, type, publicId: public_id });
 
         res.status(201).send({
             status: "Success",
@@ -130,6 +131,7 @@ const deleteRecipe = async (req, res) => {
                 message: "You are not an author of this recipe"
             });
         } else {
+            await deleteImage(recipeData.publicId);
             const deletedData = await Recipe.findByIdAndDelete(recipeId);
             res.status(200).send({
                 status: "Success",
