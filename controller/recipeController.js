@@ -17,7 +17,7 @@ const createRecipe = async (req, res) => {
 
         const result = await cloudinary.uploader.upload(req.file.path);
         recipeimages = result.url;
-        const public_id = public_id
+        const public_id = result.public_id
         const createdRecipe = await Recipe.create({ authorId, recipeimages, recipename, ingredients, description, type, publicId: public_id });
 
         res.status(201).send({
