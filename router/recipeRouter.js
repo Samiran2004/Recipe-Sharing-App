@@ -4,7 +4,8 @@ const upload = require('../middleware/multerMiddleware');
 const {
     createRecipe,
     getAllRecipe,
-    getAllByType
+    getAllByType,
+    updateRecipe
 } = require('../controller/recipeController');
 const router = express.Router();
 
@@ -19,5 +20,9 @@ router.get('/get-all', getAllRecipe);
 //@Route:- GET  /api/recipe/get-all-type
 //@Access:- Public
 router.get('/get-all-type', getAllByType);
+
+//@Route:- PATCH  /api/recipe/update/:id
+//@Access:- Private
+router.patch('/update/:id', validator, updateRecipe);
 
 module.exports = router;

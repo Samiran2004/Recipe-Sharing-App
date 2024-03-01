@@ -61,8 +61,9 @@ const getAllByType = async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const skip = (page - 1) * limit;
+    const Type = type.toLowerCase();
     try {
-        const productData = await Recipe.find({ type }).skip(skip).limit(limit);
+        const productData = await Recipe.find({ type: Type }).skip(skip).limit(limit);
         res.status(200).send({
             status: "Success",
             data: productData
@@ -76,9 +77,51 @@ const getAllByType = async (req, res) => {
     }
 }
 
+//@Route:- PATCH  /api/recipe/update/:id
+//@Access:- Private
+const updateRecipe = async (req, res) => {
+    const recipeId = req.params.id;
+    const { recipename, ingredients, description, type } = req.body;
+    if (!recipename || !ingredients || !description || !type) {
+        res.status(400).send({
+            status: "Failed",
+            message: "All feilds are required"
+        });
+    } else {
+        try {
+            const recipeData = await Recipe.findById(recipeId);
+            if (recipeData.authorId == req.user._id) {
+                recipeData.recipename = recipename;
+                recipeData.ingredients = ingredients,
+                recipeData.description = description,
+                recipeData.type = type;
+                const updatedRecipeData = await recipeData.save();
+                res.status(200).send({
+                    status: "Success",
+                    message: "Recipe updated",
+                    data: updatedRecipeData
+                });
+            } else {
+                res.status(404).send({
+                    status: "Failed",
+                    message: "User is not a valid author",
+                });
+            }
+            res.status(200).send(recipeData);
+        } catch (error) {
+            res.status(404).send({
+                status: "Failed",
+                message: "Recipe can't be updated",
+                error
+            });
+        }
+    }
+}
+
 
 module.exports = {
     createRecipe,
     getAllRecipe,
-    getAllByType
+    getAllByType,
+    updateRecipe
 }
